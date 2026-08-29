@@ -1,4 +1,4 @@
-import Link from "next/link"; // Asegúrate de importar Link
+import Link from "next/link"; 
 
 interface Meal {
   idMeal: string;
