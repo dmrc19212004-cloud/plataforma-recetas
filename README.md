@@ -8,9 +8,9 @@ Plataforma web desarrollada en Next.js y Supabase para descubrir, compartir y ge
 
 ## 📸 Capturas de pantalla
 
-1. **Vista principal / Home:** ![Home](public/home.png)
-2. **Dashboard del Chef:** ![Dashboard](public/dashboard.png)
-3. **Formulario de edición/creación:** ![Editar Receta](public/editar.png)
+1. **Vista principal / Home:** ![Home](./public/home.png)
+2. **Dashboard del Chef:** ![Dashboard](./public/dashboard.png)
+3. **Formulario de edición/creación:** ![Editar Receta](./public/editar.png)
 ---
 
 ## 🛠️ Stack tecnológico
