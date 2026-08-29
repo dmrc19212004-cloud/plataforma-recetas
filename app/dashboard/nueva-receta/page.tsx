@@ -57,6 +57,21 @@ export default async function NuevaRecetaPage() {
               />
             </div>
 
+            {/* URL de la Imagen */}
+            <div>
+              <label htmlFor="imagen_url" className="block text-sm font-medium text-slate-300 mb-1">
+                URL de la Imagen del Platillo
+              </label>
+              <input
+                type="url"
+                id="imagen_url"
+                name="imagen_url"
+                required
+                placeholder="https://ejemplo.com/tu-receta.jpg"
+                className="w-full bg-slate-800 border border-slate-700 rounded-xl px-4 py-2.5 text-sm text-white focus:outline-none focus:border-amber-500"
+              />
+            </div>
+
             {/* Categoría y Tiempo */}
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
               <div>

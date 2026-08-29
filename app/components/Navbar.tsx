@@ -13,7 +13,7 @@ export default async function Navbar() {
         </Link>
 
         <div className="flex items-center gap-4 text-sm font-medium">
-          <Link href="/" className="hover:text-amber-400 transition-colors">
+          <Link href="/catalogo" className="hover:text-amber-400 transition-colors">
             Catálogo
           </Link>
 
