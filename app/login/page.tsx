@@ -1,32 +1,7 @@
-'use server'
-
-import { createClient } from "@/lib/supabase-server";
-import { redirect } from "next/navigation";
+import { iniciarSesion } from "./actions";
 import Link from "next/link";
 
-async function iniciarSesion(formData: FormData) {
-  'use server'
-
-  const supabase = await createClient();
-
-  const email = formData.get("email") as string;
-  const password = formData.get("password") as string;
-
-  // Autenticación con Supabase Auth
-  const { error } = await supabase.auth.signInWithPassword({
-    email,
-    password,
-  });
-
-  if (error) {
-    console.error("Error al iniciar sesión:", error.message);
-    redirect(`/login?error=${encodeURIComponent(error.message)}`);
-  }
-
-  redirect("/dashboard");
-}
-
-export default async function LoginPage() {
+export default function LoginPage() {
   return (
     <main className="min-h-screen bg-slate-950 flex items-center justify-center p-4">
       <div className="max-w-md w-full bg-slate-900 border border-slate-800 rounded-2xl p-8 space-y-6">
@@ -68,7 +43,7 @@ export default async function LoginPage() {
 
           <button
             type="submit"
-            className="w-full bg-amber-600 hover:bg-amber-500 text-white font-medium py-3 rounded-xl transition-colors font-semibold mt-2"
+            className="w-full bg-amber-600 hover:bg-amber-500 text-white font-medium py-3 rounded-xl transition-colors font-semibold mt-2 cursor-pointer"
           >
             Ingresar
           </button>

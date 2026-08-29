@@ -17,6 +17,7 @@ export async function crearReceta(formData: FormData) {
   const instrucciones = formData.get('instrucciones') as string;
   const categoria = formData.get('categoria') as string;
   const tiempo_preparacion = parseInt(formData.get('tiempo_preparacion') as string);
+  const imagen_url = formData.get('imagen_url') as string;
 
   const { error } = await supabase.from('recetas').insert({
     titulo,
@@ -25,6 +26,7 @@ export async function crearReceta(formData: FormData) {
     instrucciones,
     categoria,
     tiempo_preparacion,
+    imagen_url,
     chef_id: user.id
   });
 
@@ -48,10 +50,19 @@ export async function actualizarReceta(id: string, formData: FormData) {
   const instrucciones = formData.get('instrucciones') as string;
   const categoria = formData.get('categoria') as string;
   const tiempo_preparacion = parseInt(formData.get('tiempo_preparacion') as string);
+  const imagen_url = formData.get('imagen_url') as string;
 
   const { error } = await supabase
     .from('recetas')
-    .update({ titulo, descripcion, ingredientes, instrucciones, categoria, tiempo_preparacion })
+    .update({ 
+      titulo, 
+      descripcion, 
+      ingredientes, 
+      instrucciones, 
+      categoria, 
+      tiempo_preparacion, 
+      imagen_url 
+    })
     .eq('id', id)
     .eq('chef_id', user.id);
 

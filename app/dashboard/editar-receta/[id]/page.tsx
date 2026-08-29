@@ -84,6 +84,21 @@ export default async function EditarRecetaPage({ params }: PageProps) {
               />
             </div>
 
+            {/* URL de la Imagen */}
+            <div>
+              <label htmlFor="imagen_url" className="block text-sm font-medium text-slate-300 mb-1">
+                URL de la Imagen del Platillo
+              </label>
+              <input
+                type="url"
+                id="imagen_url"
+                name="imagen_url"
+                defaultValue={receta.imagen_url || ""}
+                placeholder="https://ejemplo.com/imagen.jpg"
+                className="w-full bg-slate-800 border border-slate-700 rounded-xl px-4 py-2.5 text-sm text-white focus:outline-none focus:border-amber-500"
+              />
+            </div>
+
             {/* Categoría y Tiempo */}
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
               <div>
@@ -169,7 +184,7 @@ export default async function EditarRecetaPage({ params }: PageProps) {
 
             <button
               type="submit"
-              className="w-full bg-amber-600 hover:bg-amber-500 text-white font-medium py-3 rounded-xl transition-colors font-semibold"
+              className="w-full bg-amber-600 hover:bg-amber-500 text-white font-medium py-3 rounded-xl transition-colors"
             >
               Guardar Cambios
             </button>

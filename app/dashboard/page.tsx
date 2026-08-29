@@ -55,6 +55,7 @@ export default async function DashboardPage() {
           titulo,
           categoria,
           tiempo_preparacion,
+          imagen_url,
           profiles:chef_id (full_name)
         )
       `)
@@ -102,42 +103,57 @@ export default async function DashboardPage() {
           ) : (
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               {misRecetas.map((r) => (
-                <div key={r.id} className="p-5 bg-slate-900 border border-slate-800 rounded-xl flex flex-col justify-between space-y-4">
-                  <div>
-                    <div className="flex items-center justify-between mb-2">
-                      <span className="text-xs px-2 py-0.5 rounded bg-amber-500/10 text-amber-400 border border-amber-500/20 font-semibold">
-                        {r.categoria}
-                      </span>
-                      <span className="text-xs text-slate-400">
-                        {r.tiempo_preparacion} min
-                      </span>
+                <div key={r.id} className="bg-slate-900 border border-slate-800 rounded-xl overflow-hidden flex flex-col justify-between">
+                  
+                  {/* Imagen de la Receta (si existe) */}
+                  {r.imagen_url && (
+                    <div className="w-full h-48 overflow-hidden bg-slate-800">
+                      <img 
+                        src={r.imagen_url} 
+                        alt={r.titulo} 
+                        className="w-full h-full object-cover"
+                      />
                     </div>
-                    <h3 className="font-bold text-lg text-white">{r.titulo}</h3>
-                    <p className="text-sm text-slate-400 line-clamp-2 mt-1">
-                      {r.descripcion}
-                    </p>
+                  )}
+
+                  <div className="p-5 flex flex-col justify-between space-y-4 flex-1">
+                    <div>
+                      <div className="flex items-center justify-between mb-2">
+                        <span className="text-xs px-2 py-0.5 rounded bg-amber-500/10 text-amber-400 border border-amber-500/20 font-semibold">
+                          {r.categoria}
+                        </span>
+                        <span className="text-xs text-slate-400">
+                          {r.tiempo_preparacion} min
+                        </span>
+                      </div>
+                      <h3 className="font-bold text-lg text-white">{r.titulo}</h3>
+                      <p className="text-sm text-slate-400 line-clamp-2 mt-1">
+                        {r.descripcion}
+                      </p>
+                    </div>
+
+                    {/* Acciones CRUD exclusivas del Chef creador */}
+                    <div className="flex items-center justify-end gap-3 pt-3 border-t border-slate-800">
+                      <Link
+                        href={`/dashboard/editar-receta/${r.id}`}
+                        className="text-xs text-amber-400 hover:underline font-medium"
+                      >
+                        Editar
+                      </Link>
+                      <form action={async () => {
+                        'use server'
+                        await eliminarReceta(r.id);
+                      }}>
+                        <button
+                          type="submit"
+                          className="text-xs text-red-400 hover:underline font-medium"
+                        >
+                          Eliminar
+                        </button>
+                      </form>
+                    </div>
                   </div>
 
-                  {/* Acciones CRUD exclusivas del Chef creador */}
-                  <div className="flex items-center justify-end gap-3 pt-3 border-t border-slate-800">
-                    <Link
-                      href={`/dashboard/editar-receta/${r.id}`}
-                      className="text-xs text-amber-400 hover:underline font-medium"
-                    >
-                      Editar
-                    </Link>
-                    <form action={async () => {
-                      'use server'
-                      await eliminarReceta(r.id);
-                    }}>
-                      <button
-                        type="submit"
-                        className="text-xs text-red-400 hover:underline font-medium"
-                      >
-                        Eliminar
-                      </button>
-                    </form>
-                  </div>
                 </div>
               ))}
             </div>
@@ -156,32 +172,47 @@ export default async function DashboardPage() {
           ) : (
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               {misFavoritos.map((fav) => (
-                <div key={fav.id} className="p-5 bg-slate-900 border border-slate-800 rounded-xl flex flex-col justify-between space-y-3">
-                  <div>
-                    <span className="text-xs px-2 py-0.5 rounded bg-amber-500/10 text-amber-400 border border-amber-500/20 font-semibold">
-                      {fav.recetas?.categoria}
-                    </span>
-                    <h3 className="font-bold text-lg text-white mt-2">
-                      {fav.recetas?.titulo}
-                    </h3>
-                    <p className="text-xs text-slate-400 mt-1">
-                      Chef: {fav.recetas?.profiles?.full_name || "Anónimo"}
-                    </p>
-                    {fav.nota_personal && (
-                      <p className="text-xs text-slate-300 italic mt-2 bg-slate-800/50 p-2 rounded border border-slate-800">
-                        Nota: "{fav.nota_personal}"
+                <div key={fav.id} className="bg-slate-900 border border-slate-800 rounded-xl overflow-hidden flex flex-col justify-between">
+                  
+                  {/* Imagen de la Receta Favorita (si existe) */}
+                  {fav.recetas?.imagen_url && (
+                    <div className="w-full h-48 overflow-hidden bg-slate-800">
+                      <img 
+                        src={fav.recetas.imagen_url} 
+                        alt={fav.recetas?.titulo} 
+                        className="w-full h-full object-cover"
+                      />
+                    </div>
+                  )}
+
+                  <div className="p-5 flex flex-col justify-between space-y-3 flex-1">
+                    <div>
+                      <span className="text-xs px-2 py-0.5 rounded bg-amber-500/10 text-amber-400 border border-amber-500/20 font-semibold">
+                        {fav.recetas?.categoria}
+                      </span>
+                      <h3 className="font-bold text-lg text-white mt-2">
+                        {fav.recetas?.titulo}
+                      </h3>
+                      <p className="text-xs text-slate-400 mt-1">
+                        Chef: {fav.recetas?.profiles?.full_name || "Anónimo"}
                       </p>
-                    )}
+                      {fav.nota_personal && (
+                        <p className="text-xs text-slate-300 italic mt-2 bg-slate-800/50 p-2 rounded border border-slate-800">
+                          Nota: "{fav.nota_personal}"
+                        </p>
+                      )}
+                    </div>
+
+                    <div className="pt-2">
+                      <Link
+                        href={`/recetas/${fav.recetas?.id}`}
+                        className="text-xs text-amber-400 hover:underline font-semibold"
+                      >
+                        Ver receta completa &rarr;
+                      </Link>
+                    </div>
                   </div>
 
-                  <div className="pt-2">
-                    <Link
-                      href={`/recetas/${fav.recetas?.id}`}
-                      className="text-xs text-amber-400 hover:underline font-semibold"
-                    >
-                      Ver receta completa &rarr;
-                    </Link>
-                  </div>
                 </div>
               ))}
             </div>
