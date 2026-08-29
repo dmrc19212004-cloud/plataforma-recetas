@@ -1,0 +1,127 @@
+-- 1. LIMPIEZA PREVIA (Opcional, por si tenías tablas creadas anteriormente)
+DROP TABLE IF EXISTS public.favoritos CASCADE;
+DROP TABLE IF EXISTS public.recetas CASCADE;
+DROP TABLE IF EXISTS public.profiles CASCADE;
+
+-- 2. TABLA DE PERFILES (Extensión de auth.users de Supabase)
+CREATE TABLE public.profiles (
+  id UUID REFERENCES auth.users(id) ON DELETE CASCADE PRIMARY KEY,
+  full_name TEXT NOT NULL,
+  role TEXT NOT NULL CHECK (role IN ('chef', 'lector', 'administrador')),
+  created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW()
+);
+
+-- 3. TABLA DE RECETAS (Publicadas por los Chefs)
+CREATE TABLE public.recetas (
+  id UUID DEFAULT gen_random_uuid() PRIMARY KEY,
+  titulo TEXT NOT NULL,
+  descripcion TEXT NOT NULL,
+  ingredientes TEXT NOT NULL,
+  instrucciones TEXT NOT NULL,
+  categoria TEXT NOT NULL,
+  tiempo_preparacion INT NOT NULL, -- Tiempo en minutos
+  chef_id UUID REFERENCES public.profiles(id) ON DELETE CASCADE NOT NULL,
+  created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW()
+);
+
+-- 4. TABLA DE FAVORITOS / GUARDADOS (Lectores que guardan recetas)
+CREATE TABLE public.favoritos (
+  id UUID DEFAULT gen_random_uuid() PRIMARY KEY,
+  receta_id UUID REFERENCES public.recetas(id) ON DELETE CASCADE NOT NULL,
+  lector_id UUID REFERENCES public.profiles(id) ON DELETE CASCADE NOT NULL,
+  nota_personal TEXT,
+  created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW(),
+  UNIQUE(receta_id, lector_id) -- Un lector solo puede guardar una misma receta una vez
+);
+
+-- 5. TRIGGER AUTOMÁTICO PARA CREAR PERFIL AL REGISTRAR UN USUARIO
+CREATE OR REPLACE FUNCTION public.handle_new_user()
+RETURNS TRIGGER AS $$
+BEGIN
+  INSERT INTO public.profiles (id, full_name, role)
+  VALUES (
+    NEW.id,
+    COALESCE(NEW.raw_user_meta_data->>'full_name', 'Usuario Registrado'),
+    COALESCE(NEW.raw_user_meta_data->>'role', 'lector')
+  );
+  RETURN NEW;
+END;
+$$ LANGUAGE plpgsql SECURITY DEFINER;
+
+-- Disparador que ejecuta la función al insertar en auth.users
+DROP TRIGGER IF EXISTS on_auth_user_created ON auth.users;
+CREATE TRIGGER on_auth_user_created
+  AFTER INSERT ON auth.users
+  FOR EACH ROW EXECUTE FUNCTION public.handle_new_user();
+
+-- 6. HABILITAR ROW LEVEL SECURITY (RLS) EN TODAS LAS TABLAS
+ALTER TABLE public.profiles ENABLE ROW LEVEL SECURITY;
+ALTER TABLE public.recetas ENABLE ROW LEVEL SECURITY;
+ALTER TABLE public.favoritos ENABLE ROW LEVEL SECURITY;
+
+-- 7. POLÍTICAS DE SEGURIDAD (RLS)
+
+-- --- Políticas para PROFILES ---
+CREATE POLICY "Perfiles visibles por todos los usuarios autenticados"
+  ON public.profiles FOR SELECT
+  TO authenticated
+  USING (true);
+
+CREATE POLICY "Los usuarios pueden actualizar su propio perfil"
+  ON public.profiles FOR UPDATE
+  TO authenticated
+  USING (auth.uid() = id);
+
+-- --- Políticas para RECETAS ---
+CREATE POLICY "Cualquiera puede consultar el catálogo de recetas"
+  ON public.recetas FOR SELECT
+  USING (true);
+
+CREATE POLICY "Solo los Chefs pueden crear recetas"
+  ON public.recetas FOR INSERT
+  TO authenticated
+  WITH CHECK (
+    auth.uid() = chef_id AND
+    EXISTS (
+      SELECT 1 FROM public.profiles 
+      WHERE id = auth.uid() AND role IN ('chef', 'administrador')
+    )
+  );
+
+CREATE POLICY "Solo el Chef creador o Admin puede editar sus recetas"
+  ON public.recetas FOR UPDATE
+  TO authenticated
+  USING (
+    auth.uid() = chef_id OR 
+    EXISTS (SELECT 1 FROM public.profiles WHERE id = auth.uid() AND role = 'administrador')
+  );
+
+CREATE POLICY "Solo el Chef creador o Admin puede eliminar sus recetas"
+  ON public.recetas FOR DELETE
+  TO authenticated
+  USING (
+    auth.uid() = chef_id OR 
+    EXISTS (SELECT 1 FROM public.profiles WHERE id = auth.uid() AND role = 'administrador')
+  );
+
+-- --- Políticas para FAVORITOS ---
+CREATE POLICY "Lectores pueden ver sus propias recetas favoritas"
+  ON public.favoritos FOR SELECT
+  TO authenticated
+  USING (
+    lector_id = auth.uid() OR 
+    EXISTS (
+      SELECT 1 FROM public.recetas 
+      WHERE recetas.id = favoritos.receta_id AND recetas.chef_id = auth.uid()
+    )
+  );
+
+CREATE POLICY "Lectores pueden guardar recetas en favoritos"
+  ON public.favoritos FOR INSERT
+  TO authenticated
+  WITH CHECK (lector_id = auth.uid());
+
+CREATE POLICY "Lectores pueden eliminar sus recetas favoritas"
+  ON public.favoritos FOR DELETE
+  TO authenticated
+  USING (lector_id = auth.uid());
