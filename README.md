@@ -8,9 +8,9 @@ Plataforma web desarrollada en Next.js y Supabase para descubrir, compartir y ge
 
 ## 📸 Capturas de pantalla
 
-1. **Vista principal / Home:** ![Home](./public/screenshot-home.png)
-2. **Dashboard del Chef:** ![Dashboard](./public/screenshot-dashboard.png)
-3. **Formulario de edición/creación:** ![Editar Receta](./public/screenshot-editar.png)
+1. **Vista principal / Home:** ![Home](./public/captura%20de%20pantalla-inicio.png)
+2. **Dashboard del Chef:** ![Dashboard](./public/captura-panel-de-pantalla.png%20(2).png)
+3. **Formulario de edición/creación:** ![Editar Receta](./public/captura-editor.png.png)
 
 ---
 
