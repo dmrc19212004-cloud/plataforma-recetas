@@ -9,6 +9,11 @@ interface PageProps {
 
 export default async function EditarRecetaPage({ params }: PageProps) {
   const { id } = await params;
+  
+  if (!id) {
+    notFound();
+  }
+
   const supabase = await createClient();
 
   // 1. Verificar autenticación
