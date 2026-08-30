@@ -4,9 +4,11 @@ Plataforma web desarrollada en Next.js y Supabase para descubrir, compartir y ge
 
 🔗 **Demo en vivo:** [https://plataforma-recetas.vercel.app](https://plataforma-recetas.vercel.app)
 
----
+## 🎥 Video de Defensa del Proyecto
+Puedes ver la presentación y demostración completa del proyecto integrador (Segundo Parcial) en el siguiente enlace:
+👉 [Enlace a tu video de defensa (YouTube / Google Drive / etc.)](https://ister-my.sharepoint.com/:v:/g/personal/daniela_rodriguez_ister_edu_ec/IQDzALanBYHKT7AuLOPj2DqlAUnBE64D1V-cco6PQHUXrzg?e=0Y0wAR&nav=eyJyZWZlcnJhbEluZm8iOnsicmVmZXJyYWxBcHAiOiJTdHJlYW1XZWJBcHAiLCJyZWZlcnJhbFZpZXciOiJTaGFyZURpYWxvZy1MaW5rIiwicmVmZXJyYWxBcHBQbGF0Zm9ybSI6IldlYiIsInJlZmVycmFsTW9kZSI6InZpZXcifX0%3D)
 
-## 📸 Capturas de pantalla
+---
 
 ## 📸 Capturas de pantalla
 
